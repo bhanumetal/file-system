@@ -85,10 +85,9 @@ app.use(express.static("view"));
 //   res.sendFile(p);
 // });
 
-// app.get("/files", (req, res) => {
-//   const p = getPath("app/files.html");
-//   res.sendFile(p);
-// });
+app.get("/api", (req, res) => {
+ res.status(200).json({message:'connet'})
+});
 
 // Api endpoint
 app.post("/api/signup", signup);
