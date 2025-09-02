@@ -1,4 +1,5 @@
 const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -7,26 +8,24 @@ cloudinary.config({
 });
 
 const uploadFromBuffer = async (buffer, filename) => {
-  try {
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          folder: "uploads",
-          public_id: filename.split(".")[0], // Remove file extension
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "uploads",
+        public_id: filename ? filename.split(".")[0] : undefined, // avoid errors if filename missing
+        resource_type: "auto", // handles images, pdf, videos automatically
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error);
         }
-      );
+        resolve(result);
+      }
+    );
 
-      stream.end(buffer);
-    });
-
-    return result;
-  } catch (error) {
-    throw error; // Re-throw the error for the caller to handle
-  }
+    // ✅ Use streamifier for safe buffer handling
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
 };
 
 module.exports = { uploadFromBuffer };
