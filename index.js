@@ -4,30 +4,30 @@ dotenv.config();
 const mongoose = require("mongoose");
 mongoose.connect(process.env.DB);
 
-const root = process.cwd();
+// const root = process.cwd();
 const express = require("express");
-const multer = require("multer");
+// const multer = require("multer");
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage });
 
 const {
   signup,
   login,
-  updateImage,
-  fetchImage,
+  // updateImage,
+  // fetchImage,
 } = require("./controller/user.controller");
 const {
-  createFile,
-  fetchFiles,
-  deleteFile,
-  downloadFile,
+  // createFile,
+  // fetchFiles,
+  // deleteFile,
+  // downloadFile,
 } = require("./controller/file.controller");
 const { fetchDashboard } = require("./controller/dashboard.controller");
 // const { verifyToken } = require("./controller/token.controller");
 const {
   shareFile,
-  fetchShared,
+  // fetchShared,
   sendMail,
 } = require("./controller/share.controller");
 const AuthMiddleware = require("./middleware/auth.middleware");
@@ -36,7 +36,6 @@ app.listen(process.env.PORT || 8080);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static("view"));
 
 // Api endpoint
 
@@ -46,17 +45,17 @@ app.get("/api", (req, res) => {
 
 app.post("/api/signup", signup);
 app.post("/api/login", login);
-app.post(
-  "/api/profile-picture",
-  AuthMiddleware,
-  upload.single("picture"),
-  updateImage
-);
-app.get("/api/profile-picture", AuthMiddleware, fetchImage);
-app.post("/api/file", AuthMiddleware, upload.single("file"), createFile);
-app.get("/api/file", AuthMiddleware, fetchFiles);
-app.delete("/api/file/:id", AuthMiddleware, deleteFile);
-app.get("/api/file/download/:id", downloadFile);
+// app.post(
+//   "/api/profile-picture",
+//   AuthMiddleware,
+//   upload.single("picture"),
+//   updateImage
+// );
+// app.get("/api/profile-picture", AuthMiddleware, fetchImage);
+// app.post("/api/file", AuthMiddleware, upload.single("file"), createFile);
+// app.get("/api/file", AuthMiddleware, fetchFiles);
+// app.delete("/api/file/:id", AuthMiddleware, deleteFile);
+// app.get("/api/file/download/:id", downloadFile);
 app.get("/api/dashboard", AuthMiddleware, fetchDashboard);
 
 app.post("/api/send-mail", AuthMiddleware, sendMail);
