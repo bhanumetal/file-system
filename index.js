@@ -6,27 +6,10 @@ mongoose.connect(process.env.DB);
 
 const root = process.cwd();
 const express = require("express");
-const path = require("path");
-const { v4: uniqueId } = require("uuid");
-
 const multer = require("multer");
-const storage = multer.diskStorage({
-  destination: (req, file, next) => {
-    next(null, "files/");
-  },
-  filename: (req, file, next) => {
-    const nameArr = file.originalname.split(".");
-    const ext = nameArr.pop();
-    const name = `${uniqueId()}.${ext}`;
-    next(null, name);
-  },
-});
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 200 * 1000 * 1000,
-  },
-});
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const {
   signup,
@@ -41,7 +24,7 @@ const {
   downloadFile,
 } = require("./controller/file.controller");
 const { fetchDashboard } = require("./controller/dashboard.controller");
-const { verifyToken } = require("./controller/token.controller");
+// const { verifyToken } = require("./controller/token.controller");
 const {
   shareFile,
   fetchShared,
@@ -55,41 +38,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("view"));
 
-// Ui endpoint
-// const getPath = (filename) => {
-//   return path.join(root, "view", filename);
-// };
-
-// app.get("/signup", (req, res) => {
-//   const p = getPath("signup.html");
-//   res.sendFile(p);
-// });
-
-// app.get("/login", (req, res) => {
-//   const p = getPath("index.html");
-//   res.sendFile(p);
-// });
-
-// app.get("/", (req, res) => {
-//   const p = getPath("index.html");
-//   res.sendFile(p);
-// });
-
-// app.get("/dashboard", (req, res) => {
-//   const p = getPath("app/dashboard.html");
-//   res.sendFile(p);
-// });
-
-// app.get("/history", (req, res) => {
-//   const p = getPath("app/history.html");
-//   res.sendFile(p);
-// });
+// Api endpoint
 
 app.get("/api", (req, res) => {
- res.status(200).json({message:'connet'})
+  res.status(200).json({ message: "connet" });
 });
 
-// Api endpoint
 app.post("/api/signup", signup);
 app.post("/api/login", login);
 app.post(

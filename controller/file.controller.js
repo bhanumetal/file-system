@@ -1,6 +1,7 @@
 const FileModel = require("../model/file.model");
 const fs = require("fs");
 const path = require("path");
+const { uploadFromBuffer } = require("../middleware/uploadFile.middleware");
 
 const getType = (type) => {
   const ext = type.split("/").pop();
@@ -12,14 +13,16 @@ const getType = (type) => {
 
 const createFile = async (req, res) => {
   try {
-    const { filename } = req.body;
     const file = req.file;
+    // Upload file to Cloudinary
+    const result = await uploadFromBuffer(file.buffer, file.originalname);
+
     const payload = {
-      path: file.destination + file.filename,
-      filename: filename,
+      filename: file.originalname,
+      url: result.secure_url, // public Cloudinary URL
       type: getType(file.mimetype),
       size: file.size,
-      user: req.user.id,
+      user: req.user.id, // if AuthMiddleware adds user info
     };
 
     const newFile = await FileModel.create(payload);
