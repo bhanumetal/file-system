@@ -25,12 +25,12 @@ const {
   downloadFile,
 } = require("./controller/file.controller");
 const { fetchDashboard } = require("./controller/dashboard.controller");
-// const { verifyToken } = require("./controller/token.controller");
-// const {
-  // shareFile,
-  // fetchShared,
-  // sendMail,
-// } = require("./controller/share.controller");
+const { verifyToken } = require("./controller/token.controller");
+const {
+  shareFile,
+  fetchShared,
+  sendMail,
+} = require("./controller/share.controller");
 const AuthMiddleware = require("./middleware/auth.middleware");
 const app = express();
 // app.listen(process.env.PORT || 8080);
@@ -59,10 +59,10 @@ app.delete("/api/file/:id", AuthMiddleware, deleteFile);
 app.get("/api/file/download/:id", downloadFile);
 app.get("/api/dashboard", AuthMiddleware, fetchDashboard);
 
-// app.post("/api/send-mail", AuthMiddleware, sendMail);
-// app.post("/api/token/verify", verifyToken);
-// app.post("/api/share", AuthMiddleware, shareFile);
-// app.get("/api/share", AuthMiddleware, fetchShared);
+app.post("/api/send-mail", AuthMiddleware, sendMail);
+app.post("/api/token/verify", verifyToken);
+app.post("/api/share", AuthMiddleware, shareFile);
+app.get("/api/share", AuthMiddleware, fetchShared);
 
 // Not found
 app.use((req, res) => {
