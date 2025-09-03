@@ -6,6 +6,7 @@ mongoose.connect(process.env.DB);
 
 // const root = process.cwd();
 const express = require("express");
+const serverless = require("serverless-http");
 // const multer = require("multer");
 
 // const storage = multer.memoryStorage();
@@ -67,3 +68,8 @@ app.get("/api", (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ message: "Endpoint not found" });
 });
+
+
+// 👇 Export the handler for Vercel
+module.exports = app;
+module.exports.handler = serverless(app);
