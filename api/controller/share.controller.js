@@ -65,27 +65,26 @@ const getEmailTemplate = (link) => {
 };
 
 const shareFile = async (req, res) => {
-  try {
-    const { email, fileId } = req.body;
-    const link = `${process.env.DOMAIN}/api/file/download/${fileId}`;
-    const options = {
-      from: process.env.SMTP_EMAIL,
-      to: email,
-      subject: "Filemoon - New File Received",
-      html: getEmailTemplate(link),
-    };
+   try {
+     const { email, file_url, fileId } = req.body;
+     const options = {
+       from: process.env.SMTP_EMAIL,
+       to: email,
+       subject: "Filemoon - New File Received",
+       html: getEmailTemplate(file_url),
+     };
 
-    const payload = {
-      user: req.user.id,
-      receiverEmail: email,
-      file: fileId,
-    };
+     const payload = {
+       user: req.user.id,
+       receiverEmail: email,
+       file: fileId,
+     };
 
-    await Promise.all([conn.sendMail(options), ShareModel.create(payload)]);
-    res.status(200).json({ message: "Email sent" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+     await Promise.all([conn.sendMail(options), ShareModel.create(payload)]);
+     res.status(200).json({ message: "Email sent" });
+   } catch (err) {
+     res.status(500).json({ message: err.message });
+   }
 };
 
 const fetchShared = async (req, res) => {

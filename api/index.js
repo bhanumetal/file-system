@@ -55,7 +55,7 @@ app.post(
 app.get("/api/profile-picture", AuthMiddleware, fetchImage);
 app.post("/api/file", AuthMiddleware, upload.single("file"), createFile);
 app.get("/api/file", AuthMiddleware, fetchFiles);
-app.delete("/api/file/:id", AuthMiddleware, deleteFile);
+app.delete("/api/file", AuthMiddleware, deleteFile);
 app.get("/api/file/download/:id", downloadFile);
 app.get("/api/dashboard", AuthMiddleware, fetchDashboard);
 

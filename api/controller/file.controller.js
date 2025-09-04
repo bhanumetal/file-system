@@ -23,6 +23,7 @@ const createFile = async (req, res) => {
       type: getType(file.mimetype),
       size: file.size,
       user: req.user.id, // if AuthMiddleware adds user info
+      public_id: result.public_id,
     };
 
     const newFile = await FileModel.create(payload);
@@ -46,15 +47,42 @@ const fetchFiles = async (req, res) => {
 
 const deleteFile = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id, public_id } = req.query;
+    // Delete from DB first
     const file = await FileModel.findByIdAndDelete(id);
 
-    if (!file) return res.status(404).json({ message: "File not found" });
+    if (!file) {
+      return res
+        .status(404)
+        .json({ success: false, message: "File not found in database" });
+    }
 
-    fs.unlinkSync(file.path);
-    res.status(200).json(file);
+    // Delete from Cloudinary
+    const result = await cloudinary.uploader.destroy(public_id);
+
+    if (result.result === "not found") {
+      return res
+        .status(404)
+        .json({ success: false, message: "File not found on Cloudinary" });
+    }
+
+    if (result.result !== "ok") {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to delete from Cloudinary",
+        cloudinary: result,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "File deleted successfully",
+      cloudinary: result,
+    });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error", error: err.message });
   }
 };
 
@@ -62,21 +90,10 @@ const downloadFile = async (req, res) => {
   try {
     const { id } = req.params;
     const file = await FileModel.findById(id);
-    const ext = file.type.split("/").pop();
 
     if (!file) return res.status(404).json({ message: "File not found" });
 
-    const root = process.cwd();
-    const filePath = path.join(root, file.path);
-
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="${file.filename}.${ext}"`
-    );
-
-    res.sendFile(filePath, (err) => {
-      if (err) res.status(404).json({ message: "File not found" });
-    });
+    return res.redirect(302, file.url);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
