@@ -8,6 +8,7 @@ mongoose.connect(process.env.DB);
 const express = require("express");
 const serverless = require("serverless-http");
 const multer = require("multer");
+const cors = require("cors");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
@@ -33,6 +34,7 @@ const {
 } = require("./controller/share.controller");
 const AuthMiddleware = require("./middleware/auth.middleware");
 const app = express();
+app.use(cors());
 // app.listen(process.env.PORT || 8080);
 
 app.use(express.json());
