@@ -13,12 +13,6 @@ const fileSchema = new Schema(
       lowercase: true,
       required: true,
     },
-    path: {
-      type: String,
-      trim: true,
-      lowercase: true,
-      required: true,
-    },
     type: {
       type: String,
       trim: true,
