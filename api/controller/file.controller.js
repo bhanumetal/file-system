@@ -89,11 +89,25 @@ const deleteFile = async (req, res) => {
 const downloadFile = async (req, res) => {
   try {
     const { id } = req.params;
-    const file = await FileModel.findById(id);
+    // const file = await FileModel.findById(id);
 
+    // if (!file) return res.status(404).json({ message: "File not found" });
+    // return res.redirect(302, file.url);
+
+    if (!id || id === "undefined") {
+      return res.status(400).json({ message: "Missing id parameter" });
+    }
+
+    // ensure id is a valid ObjectId before calling Mongoose
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ message: "Invalid id format" });
+    }
+
+    const file = await FileModel.findById(id).lean();
     if (!file) return res.status(404).json({ message: "File not found" });
 
     return res.redirect(302, file.url);
+
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
