@@ -1,7 +1,9 @@
 const FileModel = require("../model/file.model");
 const fs = require("fs");
 const path = require("path");
+const mongoose = require("mongoose");
 const { uploadFromBuffer } = require("../middleware/uploadFile.middleware");
+const cloudinary = require("../utils/cloudinary");
 
 const getType = (type) => {
   const ext = type.split("/").pop();
@@ -107,7 +109,6 @@ const downloadFile = async (req, res) => {
     if (!file) return res.status(404).json({ message: "File not found" });
 
     return res.redirect(302, file.url);
-
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
